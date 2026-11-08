@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de Agendamento Preciso - Gerencie seus horários com facilidade">
+    <meta name="theme-color" content="#3B82F6">
+    <title>Agendamento Preciso</title>
+    <!-- Preconnect para fontes e Supabase -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="css/main.css">
+    <!-- Ícones SVG inline serão carregados via JS -->
+</head>
+<body>
+    <!-- Loader inicial -->
+    <div id="app-loader" class="loader" role="status" aria-label="Carregando aplicação">
+        <div class="loader-spinner"></div>
+        <p class="loader-text">Carregando...</p>
+    </div>
+
+    <!-- Tela de Login/Autenticação -->
+    <div id="auth-screen" class="screen auth-screen hidden" role="main">
+        <div class="auth-container">
+            <div class="auth-brand">
+                <svg class="auth-logo" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                    <rect width="32" height="32" rx="8" fill="currentColor"/>
+                    <path d="M8 12h16M8 16h12M8 20h8" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                <h1>Agendamento Preciso</h1>
+                <p>Gerencie seus horários com inteligência</p>
+            </div>
+
+            <div class="auth-tabs" role="tablist" aria-label="Opções de acesso">
+                <button role="tab" id="tab-login" class="auth-tab active" aria-selected="true" aria-controls="panel-login">Entrar</button>
+                <button role="tab" id="tab-register" class="auth-tab" aria-selected="false" aria-controls="panel-register">Cadastrar</button>
+            </div>
+
+            <div class="auth-panels">
+                <!-- Login Panel -->
+                <div role="tabpanel" id="panel-login" class="auth-panel active" aria-labelledby="tab-login">
+                    <form id="login-form" class="auth-form" novalidate>
+                        <div class="form-group">
+                            <label for="login-email">E-mail</label>
+                            <input type="email" id="login-email" name="email" required autocomplete="email" placeholder="seu@email.com">
+                            <span class="form-error" aria-live="polite"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Senha</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="login-password" name="password" required autocomplete="current-password" placeholder="••••••••">
+                                <button type="button" class="password-toggle" aria-label="Mostrar senha" tabindex="-1">
+                                    <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <svg class="icon-eye-off hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/></svg>
+                                </button>
+                            </div>
+                            <span class="form-error" aria-live="polite"></span>
+                        </div>
+                        <div class="form-options">
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" id="login-remember" name="remember">
+                                <span class="checkbox-custom"></span>
+                                <span>Lembrar-me</span>
+                            </label>
+                            <a href="#" id="forgot-password" class="forgot-link">Esqueci a senha</a>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" id="login-btn">
+                            <span class="btn-text">Entrar</span>
+                            <span class="btn-loader hidden"></span>
+                        </button>
+                    </form>
+                    <div class="auth-divider"><span>ou continue com</span></div>
+                    <div class="social-login">
+                        <button type="button" class="btn btn-outline social-btn" data-provider="google" aria-label="Entrar com Google">
+                            <svg class="icon-google" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                            <span>Google</span>
+                        </button>
+                        <button type="button" class="btn btn-outline social-btn" data-provider="github" aria-label="Entrar com GitHub">
+                            <svg class="icon-github" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                            <span>GitHub</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Register Panel -->
+                <div role="tabpanel" id="panel-register" class="auth-panel hidden" aria-labelledby="tab-register">
+                    <form id="register-form" class="auth-form" novalidate>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="register-name">Nome completo</label>
+                                <input type="text" id="register-name" name="full_name" required autocomplete="name" placeholder="João Silva">
+                                <span class="form-error" aria-live="polite"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email">E-mail</label>
+                            <input type="email" id="register-email" name="email" required autocomplete="email" placeholder="seu@email.com">
+                            <span class="form-error" aria-live="polite"></span>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="register-password">Senha</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="register-password" name="password" required autocomplete="new-password" placeholder="••••••••" minlength="8">
+                                    <button type="button" class="password-toggle" aria-label="Mostrar senha" tabindex="-1">
+                                        <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        <svg class="icon-eye-off hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/></svg>
+                                    </button>
+                                </div>
+                                <div class="password-strength" aria-live="polite">
+                                    <div class="strength-bar"><span></span></div>
+                                    <span class="strength-text"></span>
+                                </div>
+                                <span class="form-error" aria-live="polite"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-confirm">Confirmar senha</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="register-confirm" name="confirm_password" required autocomplete="new-password" placeholder="••••••••">
+                                    <button type="button" class="password-toggle" aria-label="Mostrar senha" tabindex="-1">
+                                        <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        <svg class="icon-eye-off hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/></svg>
+                                    </button>
+                                </div>
+                                <span class="form-error" aria-live="polite"></span>
+                            </div>
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" id="register-terms" name="terms" required>
+                                <span class="checkbox-custom"></span>
+                                <span>Aceito os <a href="#" class="terms-link">Termos de Uso</a> e <a href="#" class="terms-link">Política de Privacidade</a></span>
+                            </label>
+                            <span class="form-error" aria-live="polite"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" id="register-btn">
+                            <span class="btn-text">Criar conta</span>
+                            <span class="btn-loader hidden"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aplicação Principal (após login) -->
+    <div id="main-app" class="screen main-app hidden" role="main">
+        <!-- Header/Top Bar -->
+        <header class="topbar" role="banner">
+            <div class="topbar-left">
+                <button class="btn-icon sidebar-toggle" id="sidebar-toggle" aria-label="Alternar menu lateral" aria-expanded="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <a href="#" class="brand-link" aria-label="Agendamento Preciso - Início">
+                    <svg class="brand-logo" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                        <rect width="32" height="32" rx="8" fill="currentColor"/>
+                        <path d="M8 12h16M8 16h12M8 20h8" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                    <span class="brand-name">Agendamento Preciso</span>
+                </a>
+            </div>
+
+            <div class="topbar-center">
+                <div class="view-switcher" role="group" aria-label="Visualização do calendário">
+                    <button type="button" class="view-btn active" data-view="day" aria-pressed="true">Dia</button>
+                    <button type="button" class="view-btn" data-view="week" aria-pressed="false">Semana</button>
+                    <button type="button" class="view-btn" data-view="month" aria-pressed="false">Mês</button>
+                    <button type="button" class="view-btn" data-view="schedule" aria-pressed="false">Agenda</button>
+                </div>
+                <div class="date-nav">
+                    <button type="button" class="btn-icon nav-btn" id="nav-prev" aria-label="Período anterior">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    </button>
+                    <span class="current-date" id="current-date" aria-live="polite"></span>
+                    <button type="button" class="btn-icon nav-btn" id="nav-next" aria-label="Próximo período">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                    <button type="button" class="btn-icon nav-btn" id="nav-today" aria-label="Ir para hoje">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="search-wrapper">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="search" id="global-search" class="search-input" placeholder="Buscar agendamentos..." aria-label="Buscar agendamentos">
+                </div>
+                <button type="button" class="btn-icon notification-btn" id="notification-btn" aria-label="Notificações" aria-expanded="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span class="notification-badge hidden" aria-label="Notificações não lidas">0</span>
+                </button>
+                <div class="user-menu-wrapper">
+                    <button type="button" class="user-menu-trigger" id="user-menu-trigger" aria-label="Menu do usuário" aria-expanded="false" aria-haspopup="true">
+                        <img id="user-avatar" src="" alt="" class="user-avatar">
+                        <span id="user-name" class="user-name"></span>
+                        <svg class="chevron-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="user-dropdown hidden" id="user-dropdown" role="menu" aria-label="Opções do usuário">
+                        <div class="dropdown-header">
+                            <img src="" alt="" class="dropdown-avatar">
+                            <div>
+                                <span class="dropdown-name"></span>
+                                <span class="dropdown-email"></span>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item" role="menuitem" data-action="profile">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <span>Meu Perfil</span>
+                        </a>
+                        <a href="#" class="dropdown-item" role="menuitem" data-action="settings">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 21.49a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 1 4.6 9a1.65 1.65 0 0 1 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 1-.33 1.82V9a1.65 1.65 0 0 1 1.51-1H9a1.65 1.65 0 0 1 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 1 1 1.51 1.65 1.65 0 0 1 1.82.33l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 1-.33-1.82V3a1.65 1.65 0 0 1 1.51-1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 1-1.51 1H15a1.65 1.65 0 0 1-1 1.51v.09"/></svg>
+                            <span>Configurações</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button type="button" class="dropdown-item dropdown-danger" role="menuitem" data-action="logout">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            <span>Sair</span>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary new-appointment-btn" id="new-appointment-btn" aria-label="Novo agendamento">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span class="btn-text-desktop">Novo agendamento</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Sidebar Lateral -->
+        <aside class="sidebar" id="sidebar" role="complementary" aria-label="Painel lateral">
+            <div class="sidebar-content">
+                <!-- Recursos/Filtros -->
+                <section class="sidebar-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Recursos</h2>
+                        <button type="button" class="btn-icon section-action" id="add-resource-btn" aria-label="Adicionar recurso">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </button>
+                    </div>
+                    <div class="resource-filters">
+                        <label class="filter-option">
+                            <input type="checkbox" name="resource-filter" value="all" checked>
+                            <span class="filter-color" style="background: var(--color-primary)"></span>
+                            <span>Todos</span>
+                        </label>
+                        <div id="resource-list" class="resource-list" role="group" aria-label="Lista de recursos"></div>
+                    </div>
+                </section>
+
+                <!-- Filtros de Status -->
+                <section class="sidebar-section">
+                    <h2 class="section-title">Status</h2>
+                    <div class="status-filters" role="group" aria-label="Filtrar por status">
+                        <label class="filter-option status-option" data-status="all">
+                            <input type="checkbox" name="status-filter" value="all" checked>
+                            <span>Todos</span>
+                            <span class="filter-count" id="count-all">0</span>
+                        </label>
+                        <label class="filter-option status-option" data-status="pending">
+                            <input type="checkbox" name="status-filter" value="pending">
+                            <span class="status-indicator status-pending"></span>
+                            <span>Pendentes</span>
+                            <span class="filter-count" id="count-pending">0</span>
+                        </label>
+                        <label class="filter-option status-option" data-status="confirmed">
+                            <input type="checkbox" name="status-filter" value="confirmed">
+                            <span class="status-indicator status-confirmed"></span>
+                            <span>Confirmados</span>
+                            <span class="filter-count" id="count-confirmed">0</span>
+                        </label>
+                        <label class="filter-option status-option" data-status="cancelled">
+                            <input type="checkbox" name="status-filter" value="cancelled">
+                            <span class="status-indicator status-cancelled"></span>
+                            <span>Cancelados</span>
+                            <span class="filter-count" id="count-cancelled">0</span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Próximos Agendamentos -->
+                <section class="sidebar-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Próximos</h2>
+                        <a href="#" class="section-action" data-view="schedule">Ver todos</a>
+                    </div>
+                    <div id="upcoming-list" class="upcoming-list" role="list" aria-label="Próximos agendamentos"></div>
+                </section>
+            </div>
+
+            <!-- Footer da Sidebar -->
+            <div class="sidebar-footer">
+                <div class="user-status">
+                    <div class="status-indicator online" id="connection-status" title="Conectado"></div>
+                    <span id="connection-text">Tempo real ativo</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Overlay para mobile sidebar -->
+        <div class="sidebar-overlay hidden" id="sidebar-overlay" aria-hidden="true"></div>
+
+        <!-- Área Principal do Calendário -->
+        <main class="calendar-main" id="calendar-main" role="main" aria-label="Calendário de agendamentos">
+            <!-- Visualização Dia/Semana -->
+            <div class="calendar-view time-grid-view hidden" id="time-grid-view" role="region" aria-label="Visualização por horários">
+                <div class="time-grid-header">
+                    <div class="time-column-header"></div>
+                    <div class="days-header" id="days-header" role="row"></div>
+                </div>
+                <div class="time-grid-body">
+                    <div class="time-column" id="time-column" aria-hidden="true"></div>
+                    <div class="days-grid" id="days-grid" role="grid" aria-label="Grade de agendamentos"></div>
+                </div>
+                <div class="all-day-row hidden" id="all-day-row" role="row">
+                    <div class="time-cell">Dia todo</div>
+                    <div class="all-day-cells" id="all-day-cells" role="row"></div>
+                </div>
+            </div>
+
+            <!-- Visualização Mês -->
+            <div class="calendar-view month-view hidden" id="month-view" role="region" aria-label="Visualização mensal">
+                <div class="month-grid" id="month-grid" role="grid" aria-label="Calendário mensal"></div>
+            </div>
+
+            <!-- Visualização Agenda/Lista -->
+            <div class="calendar-view schedule-view hidden" id="schedule-view" role="region" aria-label="Visualização em lista">
+                <div class="schedule-list" id="schedule-list" role="list" aria-label="Lista de agendamentos"></div>
+            </div>
+
+            <!-- Estado vazio -->
+            <div class="empty-state hidden" id="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <h3>Nenhum agendamento</h3>
+                <p>Clique em "Novo agendamento" para começar</p>
+                <button type="button" class="btn btn-primary" id="empty-state-btn">Criar primeiro agendamento</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modais -->
+    <!-- Modal de Agendamento -->
+    <div class="modal-overlay hidden" id="appointment-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="appointment-modal-title">
+        <div class="modal appointment-modal" id="appointment-modal">
+            <div class="modal-header">
+                <h2 id="appointment-modal-title">Novo Agendamento</h2>
+                <button type="button" class="btn-icon modal-close" aria-label="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <form id="appointment-form" class="modal-body" novalidate>
+                <input type="hidden" name="id" id="appointment-id">
+                <input type="hidden" name="recurrence_parent_id" id="appointment-recurrence-parent">
+
+                <div class="form-group">
+                    <label for="appointment-title">Título *</label>
+                    <input type="text" id="appointment-title" name="title" required maxlength="200" placeholder="Título do agendamento">
+                    <span class="form-error" aria-live="polite"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="appointment-description">Descrição</label>
+                    <textarea id="appointment-description" name="description" rows="3" maxlength="1000" placeholder="Detalhes, observações..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="appointment-resource">Recurso *</label>
+                        <select id="appointment-resource" name="resource_id" required>
+                            <option value="">Selecione um recurso</option>
+                        </select>
+                        <span class="form-error" aria-live="polite"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="appointment-start">Início *</label>
+                        <input type="datetime-local" id="appointment-start" name="start_time" required>
+                        <span class="form-error" aria-live="polite"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointment-end">Fim *</label>
+                        <input type="datetime-local" id="appointment-end" name="end_time" required>
+                        <span class="form-error" aria-live="polite"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="appointment-all-day" name="all_day">
+                        <span class="checkbox-custom"></span>
+                        <span>Dia todo</span>
+                    </label>
+                </div>
+
+                <fieldset class="form-group">
+                    <legend>Recorrência</legend>
+                    <div class="recurrence-options">
+                        <label class="radio-wrapper">
+                            <input type="radio" name="recurrence" value="none" checked>
+                            <span class="radio-custom"></span>
+                            <span>Não repetir</span>
+                        </label>
+                        <label class="radio-wrapper">
+                            <input type="radio" name="recurrence" value="daily">
+                            <span class="radio-custom"></span>
+                            <span>Diariamente</span>
+                        </label>
+                        <label class="radio-wrapper">
+                            <input type="radio" name="recurrence" value="weekly">
+                            <span class="radio-custom"></span>
+                            <span>Semanalmente</span>
+                        </label>
+                        <label class="radio-wrapper">
+                            <input type="radio" name="recurrence" value="monthly">
+                            <span class="radio-custom"></span>
+                            <span>Mensalmente</span>
+                        </label>
+                        <label class="radio-wrapper">
+                            <input type="radio" name="recurrence" value="custom">
+                            <span class="radio-custom"></span>
+                            <span>Personalizado</span>
+                        </label>
+                    </div>
+                    <div class="recurrence-custom hidden" id="recurrence-custom">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="recurrence-end">Repetir até</label>
+                                <input type="date" id="recurrence-end" name="recurrence_end">
+                            </div>
+                            <div class="form-group">
+                                <label for="recurrence-count">Ou número de ocorrências</label>
+                                <input type="number" id="recurrence-count" name="recurrence_count" min="1" max="365">
+                            </div>
+                        </div>
+                        <div class="weekly-days hidden" id="weekly-days">
+                            <legend>Dias da semana</legend>
+                            <div class="day-checkboxes">
+                                <label><input type="checkbox" name="weekday" value="0"><span>Dom</span></label>
+                                <label><input type="checkbox" name="weekday" value="1"><span>Seg</span></label>
+                                <label><input type="checkbox" name="weekday" value="2"><span>Ter</span></label>
+                                <label><input type="checkbox" name="weekday" value="3"><span>Qua</span></label>
+                                <label><input type="checkbox" name="weekday" value="4"><span>Qui</span></label>
+                                <label><input type="checkbox" name="weekday" value="5"><span>Sex</span></label>
+                                <label><input type="checkbox" name="weekday" value="6"><span>Sáb</span></label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="form-group">
+                    <label for="appointment-status">Status</label>
+                    <select id="appointment-status" name="status">
+                        <option value="pending">Pendente</option>
+                        <option value="confirmed">Confirmado</option>
+                        <option value="cancelled">Cancelado</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline modal-cancel" id="appointment-cancel">Cancelar</button>
+                    <button type="button" class="btn btn-danger hidden" id="appointment-delete">Excluir</button>
+                    <button type="submit" class="btn btn-primary" id="appointment-save">
+                        <span class="btn-text">Salvar</span>
+                        <span class="btn-loader hidden"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div class="modal-overlay hidden" id="confirm-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+        <div class="modal confirm-modal">
+            <div class="modal-header">
+                <h3 id="confirm-modal-title">Confirmar ação</h3>
+            </div>
+            <div class="modal-body" id="confirm-modal-body">
+                <p>Tem certeza que deseja realizar esta ação?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline confirm-cancel">Cancelar</button>
+                <button type="button" class="btn btn-danger confirm-ok">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Notificações -->
+    <div class="modal-overlay hidden" id="notifications-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="notifications-modal-title">
+        <div class="modal notifications-modal" id="notifications-modal">
+            <div class="modal-header">
+                <h2 id="notifications-modal-title">Notificações</h2>
+                <button type="button" class="btn-icon modal-close" aria-label="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="notifications-tabs" role="tablist">
+                    <button role="tab" class="notif-tab active" data-tab="all">Todas</button>
+                    <button role="tab" class="notif-tab" data-tab="unread">Não lidas</button>
+                </div>
+                <div class="notifications-list" id="notifications-list" role="list"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="mark-all-read">Marcar todas como lidas</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container" aria-live="polite" aria-label="Notificações"></div>
+
+    <!-- Configuração do Supabase (carrega de js/supabase-config.js ou variáveis de ambiente) -->
+    <script type="module" src="js/supabase-config.js"></script>
+
+    <!-- Scripts -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
