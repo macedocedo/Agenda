@@ -6,6 +6,8 @@ Sistema de agendamento moderno, responsivo e em tempo real construído com **HTM
 ![Supabase](https://img.shields.io/badge/Supabase-Integrado-3ECF8E)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
+https://macedocedo.github.io/Agenda/
+
 ## ✨ Funcionalidades
 
 ### 📅 Visualizações de Calendário
