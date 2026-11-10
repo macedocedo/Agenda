@@ -56,10 +56,28 @@
 </div>
 
 <div class="card">
+  <h2>💰 Pagamentos</h2>
+  <p class="note">A cada 4 aulas fecha um pacote e o pagamento vence na data da 4ª aula. Toque em ✎ para mudar a data. Quando vencer, o aviso aparece no topo para você aprovar a cobrança.</p>
+  <label class="chk"><input type="checkbox" id="fc"> Faltas (❌) contam no pacote de 4 (☔ chuva e 📅 data alterada não contam)</label>
+  <div id="pags"></div>
+  <label for="pm">Mensagem de cobrança ({nome}, {datas}, {data})</label>
+  <textarea id="pm" rows="3"></textarea>
+</div>
+
+<div class="card">
   <h2>Próximas aulas</h2>
   <label for="fa">Filtrar por aluno</label>
   <select id="fa"></select>
+  <p class="note">Marque o resultado de cada aula: ✅ realizada · ☔ chuva · 📅 mudou a data · ❌ não foi. Em ☔ e 📅 abre a edição para escolher a nova data.</p>
   <div id="aulas"></div>
+  <label class="chk"><input type="checkbox" id="hist"> Mostrar aulas passadas já marcadas</label>
+  <label for="antes">Alarme extra antes da aula (no calendário)</label>
+  <select id="antes">
+    <option value="0">Sem alarme extra</option>
+    <option value="30">30 minutos antes</option>
+    <option value="60">1 hora antes</option>
+    <option value="120">2 horas antes</option>
+  </select>
   <button data-act="icsNew" id="icsNew">📅 Exportar só novas/alteradas</button>
   <button class="g" data-act="icsAll">Exportar todas</button>
   <p class="note">Cada exportação respeita o filtro de aluno. As aulas novas ou editadas voltam com o mesmo identificador, para o calendário atualizar o evento. Aulas excluídas que já estavam no calendário saem como canceladas. Na descrição do evento vai o link que abre o WhatsApp com a mensagem pronta.</p>

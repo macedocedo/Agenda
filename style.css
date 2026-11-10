@@ -43,3 +43,8 @@ label.chip{position:relative;display:block;margin:0;padding:0;font-size:inherit;
 .it.ed{flex-direction:column;align-items:stretch}
 .ed .btns{justify-content:flex-end}
 .tag.m{background:var(--ac);color:#fff}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:10px 0;font-size:14px;color:var(--tx)}
+.chk input{width:auto;min-height:0;margin-top:3px}
+.res{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.res button{margin:0;min-width:44px;min-height:40px;padding:4px 8px;font-size:18px;background:transparent;border:1px solid var(--bd)}
+.res button.on{background:var(--ac);border-color:var(--ac)}
