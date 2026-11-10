@@ -37,10 +37,22 @@
     <div><label for="ll">Local</label><input id="ll" placeholder="Pista / praça"></div>
     <div><label for="lr">Enviar lembrete às</label><input type="time" id="lr" value="08:00"></div>
   </div>
-  <label for="lw">Repetir toda semana por quantas semanas? (1 = só esta)</label>
-  <input type="number" id="lw" min="1" max="52" value="1" inputmode="numeric">
+  <label>Repetir nos dias da semana (opcional)</label>
+  <div class="dias">
+    <label class="chip"><input type="checkbox" class="dw" value="0"><span>Dom</span></label>
+    <label class="chip"><input type="checkbox" class="dw" value="1"><span>Seg</span></label>
+    <label class="chip"><input type="checkbox" class="dw" value="2"><span>Ter</span></label>
+    <label class="chip"><input type="checkbox" class="dw" value="3"><span>Qua</span></label>
+    <label class="chip"><input type="checkbox" class="dw" value="4"><span>Qui</span></label>
+    <label class="chip"><input type="checkbox" class="dw" value="5"><span>Sex</span></label>
+    <label class="chip"><input type="checkbox" class="dw" value="6"><span>Sáb</span></label>
+  </div>
+  <label for="lf">Repetir até (se vazio, 12 semanas)</label>
+  <input type="date" id="lf">
+  <p class="note">Sem nenhum dia marcado, cria só a aula da data escolhida. A repetição começa na data da aula e vai no máximo até 1 ano.</p>
   <label for="lm">Mensagem ({nome}, {hora}, {local}, {data})</label>
-  <textarea id="lm" rows="3">Oi, {nome}, tudo bem? Passando para lembrar da sua aula de skate hoje às {hora}, em {local}. Até lá! 🛹</textarea>
+  <textarea id="lm" rows="3">Oi, tudo bem?
+{nome}! Lembrando da sua aula de skate hoje às {hora}, em {local}. Até lá! 🛹</textarea>
   <button data-act="addL">Marcar aula(s)</button>
 </div>
 

@@ -8,7 +8,7 @@
 
   function $(i) { return document.getElementById(i); }
   function save() { try { localStorage.setItem('skate', JSON.stringify(S)); } catch (e) { erro('Não foi possível salvar neste navegador.'); } }
-  function erro(m) { $('err').textContent = m; if (m) setTimeout(function () { if ($('err').textContent === m) $('err').textContent = ''; }, 5000); }
+  function erro(m, good) { $('err').className = good ? 'good' : ''; $('err').textContent = m; if (m) setTimeout(function () { if ($('err').textContent === m) $('err').textContent = ''; }, 5000); }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
   function pad(n) { return String(n).padStart(2, '0'); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -55,11 +55,27 @@
     if (!d || !h || !r) { erro('Preencha a data, a hora da aula e a hora do lembrete.'); return; }
     if (d < today()) { erro('Escolha uma data de hoje em diante.'); return; }
     if (!m) { erro('Escreva a mensagem do lembrete.'); return; }
-    var w = Math.max(1, Math.min(52, parseInt($('lw').value, 10) || 1));
-    for (var i = 0; i < w; i++) {
-      S.aulas.push({ id: uid() + i, aluno: al, data: addDays(d, 7 * i), hora: h, local: $('ll').value.trim(), lembrete: r, msg: m, status: 'agendada' });
+    var dias = Array.prototype.slice.call(document.querySelectorAll('.dw:checked')).map(function (c) { return +c.value; });
+    var datas = [];
+    if (!dias.length) datas.push(d);
+    else {
+      var fim = $('lf').value || addDays(d, 84), max = addDays(d, 365);
+      if (fim < d) { erro('A data final precisa ser igual ou depois da data da aula.'); return; }
+      if (fim > max) fim = max;
+      for (var x = d; x <= fim; x = addDays(x, 1)) {
+        if (dias.indexOf(new Date(x + 'T12:00:00').getDay()) > -1) datas.push(x);
+      }
+      if (!datas.length) { erro('Nenhum dos dias escolhidos cai entre as datas.'); return; }
     }
-    erro(''); save(); render();
+    var local = $('ll').value.trim(), n = 0;
+    datas.forEach(function (x, i) {
+      var dup = S.aulas.some(function (a) { return a.aluno === al && a.data === x && a.hora === h && a.status === 'agendada'; });
+      if (dup) return;
+      S.aulas.push({ id: uid() + i, aluno: al, data: x, hora: h, local: local, lembrete: r, msg: m, status: 'agendada' });
+      n++;
+    });
+    save(); render();
+    erro(n ? n + (n === 1 ? ' aula marcada.' : ' aulas marcadas.') : 'Essas aulas já estavam marcadas.', !!n);
   }
   function icsText(s) { return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n'); }
   function fold(line) {

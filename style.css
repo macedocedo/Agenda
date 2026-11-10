@@ -33,3 +33,10 @@ button.g{background:transparent;color:var(--mu);border:1px solid var(--bd)}
   .it.col .btns{width:100%}
   .it.col .btns .btn,.it.col .btns button{flex:1}
 }
+#err.good{color:var(--ok)}
+.dias{display:flex;flex-wrap:wrap;gap:6px}
+label.chip{position:relative;margin:0;font-size:inherit;color:inherit}
+.chip input{position:absolute;opacity:0;width:1px;min-height:0;height:1px;padding:0}
+.chip span{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);font-weight:600;cursor:pointer;user-select:none}
+.chip input:checked+span{background:var(--ac);color:#fff;border-color:var(--ac)}
+.chip input:focus-visible+span{outline:2px solid var(--ac);outline-offset:2px}
