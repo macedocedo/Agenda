@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agenda Skate</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<h1>🛹 Agenda de Aulas de Skate</h1>
+<div id="err" role="alert"></div>
+
+<div class="card pend" id="pendCard" hidden>
+  <h2>⏰ Aguardando sua aprovação</h2>
+  <div id="pend"></div>
+</div>
+
+<div class="card">
+  <h2>Alunos</h2>
+  <div class="row">
+    <div><label for="an">Nome</label><input id="an" placeholder="Ex.: Pedro" autocomplete="off"></div>
+    <div><label for="at">WhatsApp (com DDD)</label><input id="at" placeholder="19999998888" inputmode="tel" autocomplete="off"></div>
+  </div>
+  <button data-act="addA">Adicionar aluno</button>
+  <div id="alunos"></div>
+</div>
+
+<div class="card">
+  <h2>Marcar aula</h2>
+  <label for="ls">Aluno</label><select id="ls"></select>
+  <div class="row">
+    <div><label for="ld">Data da aula</label><input type="date" id="ld"></div>
+    <div><label for="lh">Hora da aula</label><input type="time" id="lh" value="16:00"></div>
+  </div>
+  <div class="row">
+    <div><label for="ll">Local</label><input id="ll" placeholder="Pista / praça"></div>
+    <div><label for="lr">Enviar lembrete às</label><input type="time" id="lr" value="08:00"></div>
+  </div>
+  <label for="lw">Repetir toda semana por quantas semanas? (1 = só esta)</label>
+  <input type="number" id="lw" min="1" max="52" value="1" inputmode="numeric">
+  <label for="lm">Mensagem ({nome}, {hora}, {local}, {data})</label>
+  <textarea id="lm" rows="3">Oi {nome}! Lembrando da sua aula de skate hoje às {hora}, em {local}. Até lá! 🛹</textarea>
+  <button data-act="addL">Marcar aula(s)</button>
+</div>
+
+<div class="card">
+  <h2>Próximas aulas</h2>
+  <div id="aulas"></div>
+  <button data-act="ics">📅 Exportar para o calendário</button>
+  <p class="note">Gera um arquivo que adiciona as aulas ao calendário do celular, com alarme no horário do lembrete. Na descrição do evento vai o link que abre o WhatsApp com a mensagem pronta.</p>
+</div>
+
+<button class="g" data-act="notif" id="notif" hidden>🔔 Ativar avisos do navegador</button>
+<p class="note">Os lembretes aparecem para aprovação enquanto esta página estiver aberta. Ao aprovar, o WhatsApp abre com a mensagem pronta e você toca em enviar. Os dados ficam salvos neste navegador.</p>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
