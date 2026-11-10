@@ -51,16 +51,18 @@
   <input type="date" id="lf">
   <p class="note">Sem nenhum dia marcado, cria só a aula da data escolhida. A repetição começa na data da aula e vai no máximo até 1 ano.</p>
   <label for="lm">Mensagem ({nome}, {hora}, {local}, {data})</label>
-  <textarea id="lm" rows="3">Oi, tudo bem?
-{nome}! Lembrando da sua aula de skate hoje às {hora}, em {local}. Até lá! 🛹</textarea>
+  <textarea id="lm" rows="3">Oi {nome}! Lembrando da sua aula de skate hoje às {hora}, em {local}. Até lá! 🛹</textarea>
   <button data-act="addL">Marcar aula(s)</button>
 </div>
 
 <div class="card">
   <h2>Próximas aulas</h2>
+  <label for="fa">Filtrar por aluno</label>
+  <select id="fa"></select>
   <div id="aulas"></div>
-  <button data-act="ics">📅 Exportar para o calendário</button>
-  <p class="note">Gera um arquivo que adiciona as aulas ao calendário do celular, com alarme no horário do lembrete. Na descrição do evento vai o link que abre o WhatsApp com a mensagem pronta.</p>
+  <button data-act="icsNew" id="icsNew">📅 Exportar só novas/alteradas</button>
+  <button class="g" data-act="icsAll">Exportar todas</button>
+  <p class="note">Cada exportação respeita o filtro de aluno. As aulas novas ou editadas voltam com o mesmo identificador, para o calendário atualizar o evento. Aulas excluídas que já estavam no calendário saem como canceladas. Na descrição do evento vai o link que abre o WhatsApp com a mensagem pronta.</p>
 </div>
 
 <button class="g" data-act="notif" id="notif" hidden>🔔 Ativar avisos do navegador</button>

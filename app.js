@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var S = { alunos: [], aulas: [] }, armed = null, lastSig = '', notified = {};
+  var S = { alunos: [], aulas: [] }, armed = null, lastSig = '', notified = {}, filtro = '', editing = null;
   try {
     var raw = localStorage.getItem('skate');
     if (raw) { var p = JSON.parse(raw); if (p && Array.isArray(p.alunos) && Array.isArray(p.aulas)) S = p; }
@@ -92,30 +92,75 @@
     return x.getFullYear() + pad(x.getMonth() + 1) + pad(x.getDate()) + 'T' + pad(x.getHours()) + pad(x.getMinutes()) + '00';
   }
   function mins(t) { return +t.slice(0, 2) * 60 + +t.slice(3, 5); }
-  function exportIcs() {
+  function novas(a) { return a.exp !== (a.seq || 0); }
+  function listaFiltrada() {
     var d0 = today();
-    var l = S.aulas.filter(function (a) { return a.status === 'agendada' && a.data >= d0 && aluno(a.aluno); });
-    if (!l.length) { erro('Não há aulas futuras para exportar.'); return; }
+    return S.aulas.filter(function (a) { return a.status === 'agendada' && a.data >= d0 && aluno(a.aluno) && (!filtro || a.aluno === filtro); });
+  }
+  function cancelsFiltrados() {
+    var d0 = today();
+    return (S.cancel || []).filter(function (c) { return c.data >= d0 && (!filtro || c.aluno === filtro); });
+  }
+  function exportIcs(onlyNew) {
+    var l = listaFiltrada().filter(function (a) { return !onlyNew || novas(a); }), cs = cancelsFiltrados();
+    if (!l.length && !cs.length) { erro(onlyNew ? 'Nada novo ou alterado para exportar.' : 'Não há aulas futuras para exportar.'); return; }
     var stamp = new Date().toISOString().replace(/[-:]|\.\d{3}/g, '');
     var L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Agenda Skate//PT', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:Aulas de Skate'];
     l.forEach(function (a) {
       var al = aluno(a.aluno), url = 'https://wa.me/' + al.tel + '?text=' + encodeURIComponent(msg(a));
       var diff = mins(a.hora) - mins(a.lembrete);
-      L.push('BEGIN:VEVENT', 'UID:' + a.id + '@agenda-skate', 'DTSTAMP:' + stamp,
+      L.push('BEGIN:VEVENT', 'UID:' + a.id + '@agenda-skate', 'DTSTAMP:' + stamp, 'SEQUENCE:' + (a.seq || 0), 'STATUS:CONFIRMED',
         'DTSTART:' + icsLocal(a.data, a.hora, 0), 'DTEND:' + icsLocal(a.data, a.hora, 60),
         'SUMMARY:' + icsText('Aula de skate - ' + al.nome),
         'LOCATION:' + icsText(a.local || ''),
         'DESCRIPTION:' + icsText('Toque no link para enviar o lembrete pelo WhatsApp:\n' + url + '\n\nMensagem: ' + msg(a)),
         'URL:' + url,
-        'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsText('Enviar lembrete para ' + al.nome),
+        'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsText('Aprovar e enviar lembrete para ' + al.nome),
         'TRIGGER:' + (diff > 0 ? '-PT' + diff + 'M' : 'PT0S'), 'END:VALARM', 'END:VEVENT');
+    });
+    cs.forEach(function (c) {
+      L.push('BEGIN:VEVENT', 'UID:' + c.id + '@agenda-skate', 'DTSTAMP:' + stamp, 'SEQUENCE:' + c.seq, 'STATUS:CANCELLED',
+        'DTSTART:' + icsLocal(c.data, c.hora, 0), 'DTEND:' + icsLocal(c.data, c.hora, 60),
+        'SUMMARY:' + icsText('Aula de skate - ' + c.nome), 'END:VEVENT');
     });
     L.push('END:VCALENDAR');
     var blob = new Blob([L.map(fold).join('\r\n') + '\r\n'], { type: 'text/calendar;charset=utf-8' });
     var u = URL.createObjectURL(blob), lnk = document.createElement('a');
     lnk.href = u; lnk.download = 'aulas-skate.ics'; document.body.appendChild(lnk); lnk.click(); lnk.remove();
     setTimeout(function () { URL.revokeObjectURL(u); }, 5000);
-    erro('');
+    l.forEach(function (a) { a.exp = a.seq || 0; });
+    S.cancel = (S.cancel || []).filter(function (c) { return cs.indexOf(c) < 0; });
+    save(); render();
+    erro(l.length + ' aula(s) e ' + cs.length + ' cancelamento(s) no arquivo.', true);
+  }
+  function removeAulas(fn) {
+    S.cancel = S.cancel || [];
+    S.aulas = S.aulas.filter(function (a) {
+      if (!fn(a)) return true;
+      if (a.exp !== undefined && a.data >= today()) S.cancel.push({ id: a.id, aluno: a.aluno, nome: nome(a), data: a.data, hora: a.hora, seq: (a.seq || 0) + 1 });
+      return false;
+    });
+  }
+  function formEdit(a) {
+    return '<div class="it ed"><div class="tx"><b>' + esc(nome(a)) + '</b>' +
+      '<div class="row"><div><label for="ed-d">Data</label><input type="date" id="ed-d" value="' + a.data + '"></div>' +
+      '<div><label for="ed-h">Hora da aula</label><input type="time" id="ed-h" value="' + a.hora + '"></div></div>' +
+      '<div class="row"><div><label for="ed-l">Local</label><input id="ed-l" value="' + esc(a.local || '') + '"></div>' +
+      '<div><label for="ed-r">Lembrete às</label><input type="time" id="ed-r" value="' + a.lembrete + '"></div></div></div>' +
+      '<div class="btns"><button class="g x" data-act="cancE">Cancelar</button>' +
+      '<button class="ok x" data-act="saveE" data-id="' + a.id + '">Salvar</button></div></div>';
+  }
+  function saveEdit(id) {
+    var a = S.aulas.find(function (x) { return x.id === id; }); if (!a) return;
+    var d = $('ed-d').value, h = $('ed-h').value, r = $('ed-r').value, lc = $('ed-l').value.trim();
+    if (!d || !h || !r) { erro('Preencha data, hora da aula e hora do lembrete.'); return; }
+    if (d < today()) { erro('Escolha uma data de hoje em diante.'); return; }
+    var tempo = d !== a.data || h !== a.hora || r !== a.lembrete;
+    if (tempo || lc !== (a.local || '')) {
+      a.data = d; a.hora = h; a.lembrete = r; a.local = lc; a.seq = (a.seq || 0) + 1;
+      if (tempo) { a.status = 'agendada'; delete notified[a.id]; }
+    }
+    editing = null; save(); render(); erro('Aula atualizada.', true);
   }
 
   function setStatus(id, st) { var a = S.aulas.find(function (x) { return x.id === id; }); if (a) { a.status = st; save(); } }
@@ -126,8 +171,8 @@
       return;
     }
     armed = null;
+    removeAulas(function (a) { return a.aluno === id; });
     S.alunos = S.alunos.filter(function (a) { return a.id !== id; });
-    S.aulas = S.aulas.filter(function (a) { return a.aluno !== id; });
     save(); render();
   }
 
@@ -152,22 +197,29 @@
         '<button class="g x" data-act="skip" data-id="' + a.id + '">Pular</button></div></div>';
     }).join('');
 
+    if (filtro && !aluno(filtro)) filtro = '';
+    $('fa').innerHTML = '<option value="">Todos os alunos</option>' + S.alunos.map(function (a) { return '<option value="' + a.id + '">' + esc(a.nome) + '</option>'; }).join('');
+    $('fa').value = filtro;
     var d = today();
-    var l = S.aulas.filter(function (a) { return a.data >= d; })
+    var l = S.aulas.filter(function (a) { return a.data >= d && (!filtro || a.aluno === filtro); })
       .sort(function (a, b) { return (a.data + a.hora).localeCompare(b.data + b.hora); });
     $('aulas').innerHTML = l.map(function (a) {
+      if (editing === a.id) return formEdit(a);
+      var mk = a.status === 'agendada' && novas(a) ? '<span class="tag m">' + (a.exp === undefined ? 'novo' : 'alterado') + '</span>' : '';
       return '<div class="it"><div class="tx"><b>' + esc(nome(a)) + '</b> · ' + fd(a.data) + ' às ' + a.hora +
         '<small>' + esc(a.local || '') + ' · lembrete ' + a.lembrete + '</small></div>' +
-        '<div class="btns"><span class="tag' + (a.status === 'enviada' ? ' s' : '') + '">' + a.status + '</span>' +
+        '<div class="btns">' + mk + '<span class="tag' + (a.status === 'enviada' ? ' s' : '') + '">' + a.status + '</span>' +
+        '<button class="g x" data-act="edit" data-id="' + a.id + '" aria-label="Editar aula">✎</button>' +
         '<button class="g x" data-act="delL" data-id="' + a.id + '" aria-label="Excluir aula">✕</button></div></div>';
     }).join('') || '<div class="vazio">Nenhuma aula marcada.</div>';
+    $('icsNew').textContent = '📅 Exportar só novas/alteradas (' + (listaFiltrada().filter(novas).length + cancelsFiltrados().length) + ')';
 
     document.title = (p.length ? '(' + p.length + ') ' : '') + 'Agenda Skate';
     $('notif').hidden = !('Notification' in window) || Notification.permission !== 'default';
     lastSig = sig();
     p.forEach(function (a) { if (!notified[a.id]) { notified[a.id] = 1; notify(a); } });
   }
-  function tick() { expire(); if (sig() !== lastSig) render(); }
+  function tick() { if (editing) return; expire(); if (sig() !== lastSig) render(); }
 
   document.addEventListener('click', function (e) {
     var b = e.target.closest ? e.target.closest('[data-act]') : null;
@@ -175,9 +227,13 @@
     var act = b.getAttribute('data-act'), id = b.getAttribute('data-id');
     if (act === 'addA') addAluno();
     else if (act === 'addL') addAula();
-    else if (act === 'ics') exportIcs();
+    else if (act === 'icsNew') exportIcs(true);
+    else if (act === 'icsAll') exportIcs(false);
+    else if (act === 'edit') { editing = id; render(); }
+    else if (act === 'cancE') { editing = null; render(); }
+    else if (act === 'saveE') saveEdit(id);
     else if (act === 'delA') delAluno(id);
-    else if (act === 'delL') { S.aulas = S.aulas.filter(function (a) { return a.id !== id; }); save(); render(); }
+    else if (act === 'delL') { removeAulas(function (a) { return a.id === id; }); save(); render(); }
     else if (act === 'skip') { setStatus(id, 'dispensada'); render(); }
     else if (act === 'send') { setStatus(id, 'enviada'); setTimeout(render, 600); }
     else if (act === 'notif') {
@@ -185,6 +241,7 @@
     }
   });
 
+  document.addEventListener('change', function (e) { if (e.target && e.target.id === 'fa') { filtro = e.target.value; render(); } });
   $('ld').value = today();
   render();
   setInterval(tick, 15000);
